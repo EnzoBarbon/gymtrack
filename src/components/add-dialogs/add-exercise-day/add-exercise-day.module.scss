@@ -1,0 +1,15 @@
+form {
+  border-radius: 5px;
+  width: 90%;
+  //   background-color: var(--lighter-background);
+  background: linear-gradient(
+    -95deg,
+    var(--lighter-background) -200%,
+    var(--background-color) 600%
+  );
+  padding: 1rem;
+  input {
+    width: 80%;
+    margin: 0.2rem;
+  }
+}

@@ -1,0 +1,17 @@
+.addButtonContainer {
+  position: fixed;
+  right: 1rem;
+  display: flex;
+  justify-content: center;
+  bottom: 1rem;
+}
+
+.addButton {
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  font-weight: bold;
+  padding: 1rem;
+  background-color: greenyellow;
+  border-radius: 3px;
+  border: 0;
+  outline: 0;
+}

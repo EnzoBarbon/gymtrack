@@ -1,0 +1,9 @@
+.square {
+  position: absolute;
+  rotate: -45deg;
+  background: linear-gradient(
+    to right,
+    rgb(54, 54, 54) -100%,
+    var(--background-color) 100%
+  );
+}

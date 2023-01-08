@@ -1,0 +1,26 @@
+.exerciseForm {
+  input {
+    width: 3rem;
+    font-weight: bold;
+  }
+  hr {
+    border: 1px solid white;
+    opacity: 0.2;
+  }
+}
+
+form {
+  border-radius: 5px;
+  width: 90%;
+  //   background-color: var(--lighter-background);
+  background: linear-gradient(
+    -95deg,
+    var(--lighter-background) -200%,
+    var(--background-color) 600%
+  );
+  padding: 1rem;
+  input {
+    width: 80%;
+    margin: 0.2rem;
+  }
+}

@@ -1,0 +1,25 @@
+.container {
+  position: relative;
+  border-radius: 5px;
+  background-color: var(--lighter-background);
+  padding: 1rem;
+  margin: 1rem;
+  width: 80%;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+h2 {
+  margin-top: 0.2rem;
+}
+.exerContainer {
+  display: grid;
+  opacity: 0.9;
+}
+
+.delete {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  border-radius: 5px;
+  background-color: var(--cancel-red);
+}

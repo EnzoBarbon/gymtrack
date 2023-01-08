@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "gym-track-72b6e"
+  },
+  "targets": {
+    "gym-track-72b6e": {
+      "hosting": {
+        "gym-track": [
+          "gym-trackk"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

@@ -23,9 +23,12 @@ const prepareExerciseLogs = (
     if (!props.log) {
       dic[exercise.id!] = [{ reps: undefined, kgs: undefined }];
     } else {
-      const logExercises = props.log.exerciseLogs.find(
-        (el) => el.exerciseId === exercise.id
-      )?.sets;
+      //clone so a new set object is created and we are not modifying the original log
+      const logExercises = props.log.exerciseLogs
+        .map((el) => {
+          return structuredClone(el);
+        })
+        .find((el) => el.exerciseId === exercise.id)?.sets;
       dic[exercise.id!] = logExercises ?? [{ reps: undefined, kgs: undefined }];
     }
   });
@@ -36,6 +39,7 @@ export default function AddExerciseLog(props: AddExerciseLogProps) {
   const [exerciseLogs, setExerciseLogs] = useState<{
     [exerciseId: string]: Set[];
   }>(prepareExerciseLogs(props));
+  const [note, setNote] = useState<string | undefined>(props.log?.note);
   const sucessfulExit = (event: any) => {
     event.preventDefault();
     const date = Date.now();
@@ -43,15 +47,28 @@ export default function AddExerciseLog(props: AddExerciseLogProps) {
     Object.keys(exerciseLogs).forEach((key) => {
       const sets = exerciseLogs[key];
       const exerciseLog: ExerciseLog = { exerciseId: key, sets };
-      eLogs ? eLogs.push(exerciseLog) : (eLogs = [exerciseLog]);
+      //if the exercise logs has all the sets good
+      if (!(sets.length === 0 || sets.find((s) => !s.kgs || !s.reps))) {
+        eLogs ? eLogs.push(exerciseLog) : (eLogs = [exerciseLog]);
+      }
     });
+    console.log(eLogs, 'exercise logsss');
     const log: Log = {
       id: props.log ? props.log.id : crypto.randomUUID(),
       date: props.log ? props.log.date : date,
-      exerciseLogs: eLogs!,
+      exerciseLogs: eLogs ?? [],
       exerciseDayId: props.exerciseDay.id!,
     };
-    props.onExit(true, log);
+    if (note) {
+      log.note = note;
+    }
+
+    //Create or update the log depending on props.log
+    if (props.log) {
+      props.onExit(true, log);
+    } else {
+      props.onExit(true, log);
+    }
   };
 
   const handleInputChange = (
@@ -60,6 +77,7 @@ export default function AddExerciseLog(props: AddExerciseLogProps) {
     index: number,
     field: 'kgs' | 'reps'
   ) => {
+    console.log('log', props.log?.exerciseLogs);
     const value = event.target.value;
     const newDic = { ...exerciseLogs };
     const oldValue = newDic[exerciseId][index];
@@ -77,57 +95,82 @@ export default function AddExerciseLog(props: AddExerciseLogProps) {
     newDic[exerciseId].push({ reps: undefined, kgs: undefined });
     setExerciseLogs(newDic);
   };
-  const exerciseForms = Object.keys(exerciseLogs!).map((exerciseId) => {
-    const exercise = props.exerciseDay.exercises.find(
-      (e) => e.id === exerciseId
-    );
-    if (!exercise) throw new Error('Data corrupted.');
+  const handleNoteInput = (event: any) => {
+    const value = event.target.value;
+    setNote(value);
+  };
+  const exerciseForms = Object.keys(exerciseLogs!)
+    .filter((exerciseId) => {
+      const exercise = props.exerciseDay.exercises.find(
+        (e) => e.id === exerciseId
+      );
+      if (!exercise) throw new Error('Data corrupted.');
+      //Create
+      if (!props.log) {
+        return exercise.old ? false : true;
+      }
+      //update
+      else {
+        return true;
+      }
+    })
+    .map((exerciseId) => {
+      const exercise = props.exerciseDay.exercises.find(
+        (e) => e.id === exerciseId
+      );
+      if (!exercise) throw new Error('Data corrupted.');
 
-    const inputs = exerciseLogs![exerciseId].map((set, index, collection) => {
+      const inputs = exerciseLogs![exerciseId].map((set, index, collection) => {
+        const element = (
+          <div style={{ position: 'relative' }}>
+            <input
+              type={'number'}
+              placeholder="reps"
+              onChange={(e) => handleInputChange(e, exerciseId, index, 'reps')}
+              value={set.reps ?? ''}
+            ></input>
+            x
+            <input
+              type={'number'}
+              placeholder="kgs"
+              onChange={(e) => handleInputChange(e, exerciseId, index, 'kgs')}
+              value={set.kgs ?? ''}
+            ></input>
+            {index === collection.length - 1 ? (
+              <button
+                className="addInput"
+                onClick={(e) => handleAddInput(e, exerciseId)}
+              >
+                +
+              </button>
+            ) : (
+              <></>
+            )}
+          </div>
+        );
+        return element;
+      });
+
       const element = (
-        <div>
-          <input
-            type={'number'}
-            placeholder="reps"
-            onChange={(e) => handleInputChange(e, exerciseId, index, 'reps')}
-            value={set.reps ?? ''}
-          ></input>
-          x
-          <input
-            type={'number'}
-            placeholder="kgs"
-            onChange={(e) => handleInputChange(e, exerciseId, index, 'kgs')}
-            value={set.kgs ?? ''}
-          ></input>
-          {index === collection.length - 1 ? (
-            <button
-              className="addInput"
-              onClick={(e) => handleAddInput(e, exerciseId)}
-            >
-              +
-            </button>
-          ) : (
-            <></>
-          )}
+        <div className={styles.exerciseForm}>
+          <h3>{exercise.name}</h3>
+          {exercise.old ? <div className={styles.old}>VIEJO</div> : <></>}
+          {inputs}
+          <hr></hr>
         </div>
       );
       return element;
     });
 
-    const element = (
-      <div className={styles.exerciseForm}>
-        <h3>{exercise.name}</h3>
-        {inputs}
-        <hr></hr>
-      </div>
-    );
-    return element;
-  });
-
   return (
     <div className={'dialogContainer'}>
       <form>
-        <h2>Add exercise log</h2>
+        <h2>{!props.log ? 'Añadir' : 'Modificar'} log</h2>
+        <textarea
+          value={note}
+          placeholder="Notas (opcional)"
+          onChange={handleNoteInput}
+        ></textarea>
         {exerciseForms}
         <div className="buttonContainer">
           <button
@@ -137,10 +180,10 @@ export default function AddExerciseLog(props: AddExerciseLogProps) {
               props.onExit(false);
             }}
           >
-            CLOSE
+            CERRAR
           </button>
           <button className={'save'} onClick={(e) => sucessfulExit(e)}>
-            SAVE
+            GUARDAR
           </button>
         </div>
       </form>

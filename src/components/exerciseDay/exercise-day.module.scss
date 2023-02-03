@@ -23,3 +23,12 @@ h2 {
   border-radius: 5px;
   background-color: var(--cancel-red);
 }
+
+.editButton {
+  //transform: translateY(1rem);
+  background-color: tomato;
+  padding: 0.2rem;
+  padding-inline: 0.8rem;
+  width: 100%;
+  margin-top: 0.8rem;
+}

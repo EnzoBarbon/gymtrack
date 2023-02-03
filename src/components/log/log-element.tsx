@@ -1,4 +1,4 @@
-import { ExerciseDay, Log } from '../../model/routine.model';
+import { ExerciseDay, ExerciseLog, Log } from '../../model/routine.model';
 import styles from './log-element.module.scss';
 
 interface LogElementProps {
@@ -6,19 +6,25 @@ interface LogElementProps {
   previousLog?: Log;
   onClick: (log: Log) => void;
   onRemoveClick: () => void;
-  exerciseDay?: ExerciseDay;
+  exerciseDay: ExerciseDay;
 }
 
 const getSetDifference = (log: Log, previousLog: Log, exerciseId: string) => {
   const diff =
-    log.exerciseLogs.find((e) => e.exerciseId === exerciseId)!.sets.length -
-    previousLog.exerciseLogs.find((e) => e.exerciseId === exerciseId)!.sets
-      .length;
+    getSetsLength(log.exerciseLogs.find((e) => e.exerciseId === exerciseId)) -
+    getSetsLength(
+      previousLog.exerciseLogs.find((e) => e.exerciseId === exerciseId)
+    );
   if (diff === 0) return <></>;
   if (diff < 0) {
     return <span className={styles.badHint}>{diff} set</span>;
   }
   return <span className={styles.goodHint}>+{diff} set</span>;
+};
+const getSetsLength = (exerciseLog?: ExerciseLog) => {
+  if (!exerciseLog) return 0;
+  if (exerciseLog.sets) return exerciseLog.sets.length;
+  return 0;
 };
 
 const getRepDifference = (
@@ -29,11 +35,12 @@ const getRepDifference = (
 ) => {
   const currSets = log.exerciseLogs.find(
     (e) => e.exerciseId === exerciseId
-  )!.sets;
+  )?.sets;
   const prevSets = previousLog.exerciseLogs.find(
     (e) => e.exerciseId === exerciseId
-  )!.sets;
+  )?.sets;
   // there is no same set in the two logs
+  if (!currSets || !prevSets) return <></>;
   if (setIndex > currSets.length - 1 || setIndex > prevSets.length - 1) {
     return <></>;
   }
@@ -59,10 +66,12 @@ const getKgsDifference = (
 ) => {
   const currSets = log.exerciseLogs.find(
     (e) => e.exerciseId === exerciseId
-  )!.sets;
+  )?.sets;
   const prevSets = previousLog.exerciseLogs.find(
     (e) => e.exerciseId === exerciseId
-  )!.sets;
+  )?.sets;
+
+  if (!currSets || !prevSets) return <></>;
   // there is no same set in the two logs
   if (setIndex > currSets.length - 1 || setIndex > prevSets.length - 1) {
     return <></>;
@@ -88,32 +97,37 @@ const getKgsDifference = (
 export default function LogElement(props: LogElementProps) {
   const date = new Date(props.log.date);
   const logElements = props.log.exerciseLogs.map((e) => {
-    const sets = e.sets.map((set, setIndex) => (
-      <div>
-        <span>
-          {set.reps} x {set.kgs}{' '}
-          {props.previousLog
-            ? getRepDifference(
-                props.log,
-                props.previousLog,
-                e.exerciseId,
-                setIndex
-              )
-            : ''}
-          {props.previousLog
-            ? getKgsDifference(
-                props.log,
-                props.previousLog,
-                e.exerciseId,
-                setIndex
-              )
-            : ''}
-        </span>
-      </div>
-    ));
-    const exerciseName = props.exerciseDay
-      ? props.exerciseDay.exercises.find((ex) => ex.id === e.exerciseId)?.name
-      : e.exerciseId;
+    console.log('exercise log', e);
+    let sets = [<></>];
+    if (e.sets) {
+      sets = e.sets.map((set, setIndex) => (
+        <div>
+          <span>
+            {set.reps} x {set.kgs}{' '}
+            {props.previousLog
+              ? getRepDifference(
+                  props.log,
+                  props.previousLog,
+                  e.exerciseId,
+                  setIndex
+                )
+              : ''}
+            {props.previousLog
+              ? getKgsDifference(
+                  props.log,
+                  props.previousLog,
+                  e.exerciseId,
+                  setIndex
+                )
+              : ''}
+          </span>
+        </div>
+      ));
+    }
+    const exerciseName =
+      props.exerciseDay.exercises.find((ex) => ex.id === e.exerciseId)?.name ??
+      'not-found';
+
     const result = (
       <div>
         <h3>
@@ -131,6 +145,7 @@ export default function LogElement(props: LogElementProps) {
   return (
     <div className={styles.container}>
       <h2>{date.toLocaleDateString()}</h2>
+      <span className={styles.note}>{props.log.note}</span>
       {logElements}
       <button
         className={styles.editButton}
@@ -142,7 +157,7 @@ export default function LogElement(props: LogElementProps) {
         className={styles.removeButton}
         onClick={() => props.onRemoveClick()}
       >
-        BORRAR
+        <span className="material-symbols-outlined">delete</span>
       </button>
     </div>
   );

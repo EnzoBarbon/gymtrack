@@ -1,8 +1,16 @@
 .container {
-  min-width: 20rem;
+  width: 80%;
   margin: 1rem;
-  padding: 2rem;
+  padding: 1rem;
   color: white;
   background-color: var(--lighter-background);
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   cursor: pointer;
+  position: relative;
+}
+
+span {
+  font-size: 0.9rem;
+  opacity: 0.7;
 }

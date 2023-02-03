@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">gym-track</string>
+    <string name="title_activity_main">gym-track</string>
+    <string name="package_name">com.web.gymtrackk</string>
+    <string name="custom_url_scheme">com.web.gymtrackk</string>
+</resources>

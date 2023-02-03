@@ -4,18 +4,21 @@ body,
   margin: 0;
   height: 100%;
   padding: 0;
-  overflow-x: hidden;
+  z-index: 0;
   position: relative;
 }
 :root {
   --background-color: #141616;
   --lighter-background: rgb(48, 48, 48);
   --cancel-red: rgb(221, 31, 31);
+  --bottom-nav-height: 3rem;
 }
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;400;600;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
 .dialogContainer {
+  z-index: 1000;
   position: fixed;
   height: 100%;
   width: 100%;
@@ -27,8 +30,15 @@ body,
   justify-content: center;
   .addInput {
     margin-left: 0.4rem;
-    padding: 0.4rem;
+    padding-block: 0.1rem;
+    padding-inline: 0.4rem;
     background-color: yellowgreen;
+  }
+  .removeInput {
+    margin-left: 0.4rem;
+    padding-block: 0.1rem;
+    padding-inline: 0.4rem;
+    background-color: var(--cancel-red);
   }
   .buttonContainer {
     display: flex;
@@ -58,6 +68,14 @@ button {
   font-weight: bold;
   cursor: pointer;
 }
+
+.delete {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  border-radius: 5px;
+  background-color: var(--cancel-red);
+}
 #root {
   background-color: var(--background-color);
 }
@@ -66,11 +84,13 @@ body {
 }
 
 ::-webkit-scrollbar {
+  z-index: 10000;
   width: 5px;
   overflow: auto;
   float: left;
 }
 ::-webkit-scrollbar-thumb {
+  z-index: 10000;
   background: #666;
   border-radius: 4px;
 }

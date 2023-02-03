@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import AddButton from '../../components/add-button/add-button';
 import AddExerciseLog from '../../components/add-dialogs/add-exercise-log/add-exercise-log';
+import { addService } from '../../components/back-button/footer';
+import CardText from '../../components/card-text/card-text';
 import LogElement from '../../components/log/log-element';
 import {
   addLog,
@@ -9,10 +10,8 @@ import {
   getLogs,
   removeLog,
 } from '../../db/routine.db';
-import { ExerciseDay, ExerciseLog, Log } from '../../model/routine.model';
+import { ExerciseDay, Log } from '../../model/routine.model';
 import styles from './exercise-day-page.module.scss';
-
-interface ExerciseDayPageProps {}
 
 export default function ExerciseDayPage() {
   const { routineId, exerciseDayId } = useParams();
@@ -74,26 +73,28 @@ export default function ExerciseDayPage() {
     loadExerciseDay();
     loadLogs();
   }, []);
+
+  useEffect(() => {
+    addService.addFunction = () => {
+      if (!exerciseDay) return;
+      setAddExerciseLogDialog(
+        <AddExerciseLog
+          onExit={onExitDialog}
+          exerciseDay={exerciseDay}
+        ></AddExerciseLog>
+      );
+    };
+  }, [exerciseDay]);
   return (
     <div className={styles.container}>
-      <h1>El puto dia de {exerciseDay?.name}</h1>
-      <div className={styles.logElementsContainer}>{logElements}</div>
-
-      {/* Only add the add button when the exercise day is done loading */}
-      {exerciseDay ? (
-        <AddButton
-          action={() => {
-            setAddExerciseLogDialog(
-              <AddExerciseLog
-                onExit={onExitDialog}
-                exerciseDay={exerciseDay}
-              ></AddExerciseLog>
-            );
-          }}
-        ></AddButton>
-      ) : (
-        <></>
-      )}
+      <h1>Día de {exerciseDay?.name}</h1>
+      <div className={styles.logElementsContainer}>
+        {logElements?.length !== 0 ? (
+          logElements
+        ) : (
+          <CardText text="No hay logs de ejercicio. Ponte a entrenar"></CardText>
+        )}
+      </div>
       {addExerciseLogDialog}
     </div>
   );

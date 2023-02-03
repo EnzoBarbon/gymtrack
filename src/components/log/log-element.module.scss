@@ -7,6 +7,18 @@
   margin: 1rem;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
+input,
+textarea {
+  border-radius: 5px;
+  border: 0;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  background-color: rgba(255, 255, 255, 0.035);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.144);
+}
+textarea {
+  width: 100%;
+}
 h2 {
   color: tomato;
 }
@@ -47,6 +59,10 @@ hr {
   right: 0.5rem;
   position: absolute;
   background-color: var(--cancel-red);
+}
+.note {
+  font-size: 0.9rem;
+  opacity: 0.7;
 }
 
 .editButton {

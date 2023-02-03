@@ -8,6 +8,9 @@ import { RouterProvider } from 'react-router-dom';
 import { router } from './routes';
 import Square from './components/background-props/square/square';
 import CircleOutline from './components/background-props/circle-outline/circle-outline';
+import Footer from './components/back-button/footer';
+import Header from './components/header/header';
+import Spark from './components/background-props/spark/spark';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -26,6 +29,13 @@ export const db = getFirestore(app);
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+document.addEventListener('ionBackButton', (ev: any) => {
+  ev.detail.register(10, () => {
+    window.history.back();
+  });
+});
+
 root.render(
   <React.StrictMode>
     <div
@@ -33,10 +43,13 @@ root.render(
         overflow: 'hidden',
         position: 'fixed',
         top: 0,
+        zIndex: -100,
         height: '100%',
         width: '100%',
+        backgroundColor: 'var(--background-color)',
       }}
     >
+      <Spark></Spark>
       <Square width={22} height={22} right={12} top={-4}></Square>
       <Square width={20} height={20} right={-3} top={2}></Square>
       <CircleOutline
@@ -60,7 +73,10 @@ root.render(
         reverse={true}
       ></Square>
     </div>
+    <Header></Header>
     <RouterProvider router={router}></RouterProvider>
+    <div style={{ height: 'var(--bottom-nav-height)' }}></div>
+    <Footer></Footer>
   </React.StrictMode>
 );
 

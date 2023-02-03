@@ -1,3 +1,5 @@
+import { loadService } from './../components/back-button/footer';
+import { getAuth } from 'firebase/auth';
 import { Routine, ExerciseDay, Log } from './../model/routine.model';
 import {
   collection,
@@ -9,11 +11,15 @@ import {
   setDoc,
   where,
 } from 'firebase/firestore';
-import { from, map, mergeMap, Observable } from 'rxjs';
+import { delay, from, map, mergeMap, Observable, tap } from 'rxjs';
 import { db } from '..';
 
 export function getRoutines(): Observable<Routine[]> {
-  const querySnapshot = getDocs(collection(db, 'routines'));
+  preLoad();
+  const userId = getAuth().currentUser?.uid;
+  const querySnapshot = getDocs(
+    query(collection(db, 'routines'), where('userId', '==', userId))
+  );
   const result = from(querySnapshot).pipe(
     map((snap) => {
       const routines: Routine[] = snap.docs.map((doc) => {
@@ -24,19 +30,22 @@ export function getRoutines(): Observable<Routine[]> {
       return routines;
     })
   );
-  return result;
+  return postLoad(result);
 }
 
 export function getRoutineById(id: string): Observable<Routine> {
+  preLoad();
   const docRef = doc(db, 'routines', id);
   const result = from(getDoc(docRef)).pipe(
     mergeMap((snap) => {
       const routine = snap.data() as Routine;
+      console.log('q choo', routine);
       routine.id = snap.id;
       return from(
         getDocs(collection(db, 'routines/' + id + '/exerciseDays'))
       ).pipe(
         map((eds) => {
+          if (!eds) return routine;
           const exercises = eds.docs.map((exerciseDoc) => {
             const ex = exerciseDoc.data() as ExerciseDay;
             ex.id = exerciseDoc.id;
@@ -48,25 +57,49 @@ export function getRoutineById(id: string): Observable<Routine> {
       );
     })
   );
-  return result;
+  return postLoad(result);
 }
 
 export function addExerciseDay(routineId: string, exerciseDay: ExerciseDay) {
-  return from(
-    setDoc(
-      doc(db, `routines/${routineId}/exerciseDays/${crypto.randomUUID()}`),
-      exerciseDay
+  preLoad();
+  return postLoad(
+    from(
+      setDoc(
+        doc(db, `routines/${routineId}/exerciseDays/${exerciseDay.id}`),
+        exerciseDay
+      )
     )
   );
 }
+export function addRoutine(routine: Routine) {
+  preLoad();
+  return postLoad(from(setDoc(doc(db, `routines/${routine.id}`), routine)));
+}
+export function removeRoutine(routine: Routine) {
+  preLoad();
+  return postLoad(from(deleteDoc(doc(db, `routines/${routine.id}`))));
+}
+
 export function addLog(log: Log) {
-  return from(setDoc(doc(db, `logs/${log.id}`), log));
+  preLoad();
+  return postLoad(from(setDoc(doc(db, `logs/${log.id}`), log)));
 }
 export function removeLog(log: Log) {
-  return from(deleteDoc(doc(db, `logs/${log.id}`)));
+  preLoad();
+  return postLoad(from(deleteDoc(doc(db, `logs/${log.id}`))));
+}
+
+export function removeExerciseDay(routineId: string, exerciseDay: ExerciseDay) {
+  preLoad();
+  return postLoad(
+    from(
+      deleteDoc(doc(db, `routines/${routineId}/exerciseDays/${exerciseDay.id}`))
+    )
+  );
 }
 
 export function getLogs(exerciseDayId: string) {
+  preLoad();
   const querySnapshot = getDocs(
     query(collection(db, 'logs'), where('exerciseDayId', '==', exerciseDayId))
   );
@@ -80,10 +113,11 @@ export function getLogs(exerciseDayId: string) {
       return logs;
     })
   );
-  return result;
+  return postLoad(result);
 }
 
 export function getExerciseDay(routineId: string, exerciseDayId: string) {
+  preLoad();
   const docRef = doc(db, `routines/${routineId}/exerciseDays`, exerciseDayId);
   const result = from(getDoc(docRef)).pipe(
     map((snap) => {
@@ -92,5 +126,13 @@ export function getExerciseDay(routineId: string, exerciseDayId: string) {
       return day;
     })
   );
-  return result;
+  return postLoad(result);
+}
+
+function postLoad<T>(observable: Observable<T>) {
+  observable = observable.pipe(tap(() => loadService.loading.next(false)));
+  return observable;
+}
+function preLoad() {
+  loadService.loading.next(true);
 }

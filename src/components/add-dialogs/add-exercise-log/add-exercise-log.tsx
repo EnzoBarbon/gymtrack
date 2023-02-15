@@ -154,7 +154,7 @@ export default function AddExerciseLog(props: AddExerciseLogProps) {
       const element = (
         <div className={styles.exerciseForm}>
           <h3>{exercise.name}</h3>
-          {exercise.old ? <div className={styles.old}>VIEJO</div> : <></>}
+          {exercise.old ? <div className={styles.old}>OLD</div> : <></>}
           {inputs}
           <hr></hr>
         </div>

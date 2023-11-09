@@ -7,11 +7,11 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithCredential,
-  signInWithPopup,
 } from 'firebase/auth';
 import { addService, loadService } from '../../components/back-button/footer';
 import AddRoutine from '../../components/add-dialogs/add-routine/add-routine';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
+import { NavigationSetter } from '../../components/back-button/navigationService';
 
 export const signInWithGoogle = async () => {
   // 1. Create credentials on the native layer
@@ -93,9 +93,13 @@ export default function RoutinesPage() {
   ));
 
   return (
-    <div className={styles.container}>
-      {routineElements}
-      {addRoutineDialog}
-    </div>
+    <>
+      <div className={styles.container}>
+        {routineElements}
+        {addRoutineDialog}
+      </div>
+      {/* //set navigation outisde of the component */}
+      <NavigationSetter></NavigationSetter>
+    </>
   );
 }

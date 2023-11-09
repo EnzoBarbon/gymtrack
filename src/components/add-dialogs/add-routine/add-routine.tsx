@@ -1,7 +1,6 @@
 import { getAuth } from 'firebase/auth';
 import { useState } from 'react';
 import { Routine } from '../../../model/routine.model';
-import styles from './add-routine.module.scss';
 
 interface AddRoutineProps {
   onExit: (sucess: boolean, routine?: Routine) => void;
@@ -31,7 +30,7 @@ export default function AddRoutine(props: AddRoutineProps) {
         <input
           type={'text'}
           placeholder="Nombre"
-          onChange={(e) => handleNameChange(e)}
+          onInput={(e) => handleNameChange(e)}
         ></input>
 
         <div className="buttonContainer">

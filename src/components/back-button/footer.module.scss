@@ -7,6 +7,7 @@
   height: var(--bottom-nav-height);
   width: 100%;
   bottom: 0;
+  justify-content: center;
   align-items: center;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 5px 11px;
 }
@@ -14,15 +15,18 @@
 .back {
   color: tomato;
   background-color: transparent;
-  left: 1rem;
-  bottom: 1rem;
+  left: 0rem;
+  position: absolute;
+
   padding: 1rem;
   border-right: 1px solid rgba(255, 255, 255, 0.121);
 }
 .add {
   background-color: transparent;
   padding: 1rem;
-  margin-left: auto;
+  justify-self: end;
+  position: absolute;
+  right: 0;
   color: yellowgreen;
   border-left: 1px solid rgba(255, 255, 255, 0.121);
 }
@@ -32,6 +36,11 @@
   position: absolute;
   top: -0.2rem;
   background-color: rgba(85, 85, 85, 0.151);
+}
+.center {
+  background-color: transparent;
+  color: white;
+  scale: 1.1;
 }
 
 @keyframes loadingAnim {

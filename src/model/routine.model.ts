@@ -36,3 +36,11 @@ export interface Log {
   exerciseLogs: ExerciseLog[];
   exerciseDayId: string;
 }
+
+export interface LogWithDate {
+  id: string;
+  note?: string;
+  numberDate: number;
+  date: Date;
+  exerciseDayId: string;
+}

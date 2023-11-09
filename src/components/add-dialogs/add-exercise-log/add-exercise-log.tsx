@@ -126,14 +126,14 @@ export default function AddExerciseLog(props: AddExerciseLogProps) {
             <input
               type={'number'}
               placeholder="reps"
-              onChange={(e) => handleInputChange(e, exerciseId, index, 'reps')}
+              onInput={(e) => handleInputChange(e, exerciseId, index, 'reps')}
               value={set.reps ?? ''}
             ></input>
             x
             <input
               type={'number'}
               placeholder="kgs"
-              onChange={(e) => handleInputChange(e, exerciseId, index, 'kgs')}
+              onInput={(e) => handleInputChange(e, exerciseId, index, 'kgs')}
               value={set.kgs ?? ''}
             ></input>
             {index === collection.length - 1 ? (
@@ -169,7 +169,7 @@ export default function AddExerciseLog(props: AddExerciseLogProps) {
         <textarea
           value={note}
           placeholder="Notas (opcional)"
-          onChange={handleNoteInput}
+          onInput={handleNoteInput}
         ></textarea>
         {exerciseForms}
         <div className="buttonContainer">

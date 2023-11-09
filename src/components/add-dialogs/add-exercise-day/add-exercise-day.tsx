@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Exercise, ExerciseDay, Routine } from '../../../model/routine.model';
-import styles from './add-exercise-day.module.scss';
 
 interface AddExerciseDayProps {
   onExit: (
@@ -102,7 +101,7 @@ export default function AddExerciseDay(props: AddExerciseDayProps) {
     } else {
       exercisesElements.push(
         <div>
-          <input type={'text'} value={ex.name} onChange={handler}></input>
+          <input type={'text'} value={ex.name} onInput={handler}></input>
           <button
             className={'removeInput'}
             onClick={(event) => removeExercise(event, key)}

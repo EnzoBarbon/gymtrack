@@ -27,6 +27,7 @@
   "scripts": {
     "premobile": "react-scripts build",
     "mobile": "npx cap sync",
+    "openmobile": "npx cap open android",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

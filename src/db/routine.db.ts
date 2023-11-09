@@ -11,7 +11,7 @@ import {
   setDoc,
   where,
 } from 'firebase/firestore';
-import { delay, from, map, mergeMap, Observable, tap } from 'rxjs';
+import { from, map, mergeMap, Observable, tap } from 'rxjs';
 import { db } from '..';
 
 export function getRoutines(): Observable<Routine[]> {
@@ -39,7 +39,6 @@ export function getRoutineById(id: string): Observable<Routine> {
   const result = from(getDoc(docRef)).pipe(
     mergeMap((snap) => {
       const routine = snap.data() as Routine;
-      console.log('q choo', routine);
       routine.id = snap.id;
       return from(
         getDocs(collection(db, 'routines/' + id + '/exerciseDays'))
@@ -102,6 +101,24 @@ export function getLogs(exerciseDayId: string) {
   preLoad();
   const querySnapshot = getDocs(
     query(collection(db, 'logs'), where('exerciseDayId', '==', exerciseDayId))
+  );
+  const result = from(querySnapshot).pipe(
+    map((snap) => {
+      const logs: Log[] = snap.docs.map((doc) => {
+        const log = doc.data() as Log;
+        log.id = doc.id;
+        return log;
+      });
+      return logs;
+    })
+  );
+  return postLoad(result);
+}
+
+export function getLogsByExerciseDays(exerciseDays: string[]) {
+  preLoad();
+  const querySnapshot = getDocs(
+    query(collection(db, 'logs'), where('exerciseDayId', 'in', exerciseDays))
   );
   const result = from(querySnapshot).pipe(
     map((snap) => {
